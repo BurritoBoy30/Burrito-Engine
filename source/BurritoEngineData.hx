@@ -59,8 +59,14 @@ class BurritoEngineData
 		if (FlxG.save.data.botplay == null)
 			FlxG.save.data.botplay = false;
 			
+		if (FlxG.save.data.timeShow == null)
+			FlxG.save.data.timeShow = true;
+			
 		if (FlxG.save.data.grilledCheese == null)
 			FlxG.save.data.grilledCheese = false;
+			
+		if (FlxG.save.data.camMove == null)
+			FlxG.save.data.camMove = true;
 
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();

@@ -1,41 +1,29 @@
 package;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
 
 class StrumNote extends FlxSprite
-{
-	public var resetAnim:Float = 0;
-	private var noteData:Int = 0;
-
-	private var player:Int;
-
-	public function new(x:Float, y:Float, leData:Int, player:Int) {
-		noteData = leData;
-		this.player = player;
-		this.noteData = leData;
-		super(x, y);
+{	
+	public var playerNote:Bool;
 		
-		var skin:String = 'NOTE_assets';
-
-		switch(PlayState.SONG.noteStyle)
+	public function new(x:Float, y:Float, skin:String, strumID:Int, playerNote:Bool)
+    {
+		super(x, y);
+		 
+		ID = strumID;
+		
+		switch (skin)
 		{
 			case 'pixel':
-				loadGraphic(Paths.image('pixelUI/' + skin));
-				width = width / 4;
-				height = height / 5;
-				loadGraphic(Paths.image('pixelUI/' + skin), true, Math.floor(width), Math.floor(height));
+				loadGraphic(Paths.image('pixelUI/NOTE_assets'), true, 17, 17);
 				animation.add('green', [6]);
 				animation.add('red', [7]);
 				animation.add('blue', [5]);
-				animation.add('purple', [4]);
-
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-
-				switch (Math.abs(leData))
+				animation.add('purplel', [4]);
+				
+				switch (Math.abs(strumID))
 				{
 					case 0:
 						animation.add('static', [0]);
@@ -55,17 +43,17 @@ class StrumNote extends FlxSprite
 						animation.add('confirm', [15, 19], 24, false);
 				}
 				
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				antialiasing = false;
+
 			default:
-				frames = Paths.getSparrowAtlas(skin);
+				frames = Paths.getSparrowAtlas('NOTE_assets');
 				animation.addByPrefix('green', 'arrowUP');
 				animation.addByPrefix('blue', 'arrowDOWN');
 				animation.addByPrefix('purple', 'arrowLEFT');
 				animation.addByPrefix('red', 'arrowRIGHT');
-
-				setGraphicSize(Std.int(width * 0.7));
-				antialiasing = true;
-
-				switch (Math.abs(leData))
+				
+				switch (Math.abs(strumID))
 				{
 					case 0:
 						animation.addByPrefix('static', 'arrowLEFT');
@@ -84,43 +72,28 @@ class StrumNote extends FlxSprite
 						animation.addByPrefix('pressed', 'right press', 24, false);
 						animation.addByPrefix('confirm', 'right confirm', 24, false);
 				}
+				
+				antialiasing = true;
+				setGraphicSize(Std.int(width * 0.7));
+		
 		}
-
+		playAnimation('static');
+		
 		updateHitbox();
 		scrollFactor.set();
-	}
 
-	public function postAddedToGroup() {
-		playAnim('static');
-		x += Note.swagWidth * noteData;
-		x += 50;
-		x += ((FlxG.width / 2) * player);
-		ID = noteData;
+		this.playerNote = playerNote;
 	}
-
-	override function update(elapsed:Float) {
-		if(resetAnim > 0) {
-			resetAnim -= elapsed;
-			if(resetAnim <= 0) {
-				playAnim('static');
-				resetAnim = 0;
-			}
-		}
-		super.update(elapsed);
-	}
-
-	public function playAnim(anim:String, ?force:Bool = false) {
-		animation.play(anim, force);
-		centerOffsets();
 	
-		if(animation.curAnim.name == 'confirm' && PlayState.SONG.noteStyle != 'pixel') {
-			updateConfirmOffset();
-		}
-	}
-
-	function updateConfirmOffset() { //TO DO: Find a calc to make the offset work fine on other angles
+	public function playAnimation(go:String, hard:Bool = false)
+	{
+		animation.play(go,hard);
 		centerOffsets();
-		offset.x -= 13;
-		offset.y -= 13;
+		centerOrigin();
+	}
+	
+	override function update(elapsed:Float)
+	{		
+		super.update(elapsed);
 	}
 }

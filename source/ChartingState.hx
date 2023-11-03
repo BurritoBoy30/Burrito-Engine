@@ -88,8 +88,8 @@ class ChartingState extends MusicBeatState
 	var gridBlackLine:FlxSprite;
 	var vocals:FlxSound;
 
-	var player2:Character = new Character(0,0, "dad");
-	var player1:Boyfriend = new Boyfriend(0,0, "bf");
+	var player2:Character;
+	var player1:Boyfriend;
 
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
@@ -137,8 +137,8 @@ class ChartingState extends MusicBeatState
 		curRenderedNotes = new FlxTypedGroup<Note>();
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
-		leftIcon = new HealthIcon(_song.player1);
-		rightIcon = new HealthIcon(_song.player2);
+		leftIcon = new HealthIcon(_song.player2);
+		rightIcon = new HealthIcon(_song.player1);
 		leftIcon.scrollFactor.set(1, 1);
 		rightIcon.scrollFactor.set(1, 1);
 
@@ -633,7 +633,10 @@ class ChartingState extends MusicBeatState
 	var writingNotes:Bool = false;
 
 	override function update(elapsed:Float)
-	{		
+	{
+		player2 = new Character(0,0,_song.player2);
+		player1 = new Boyfriend(0,0,_song.player1);
+		
 		updateHeads();
 		
 		curStep = recalculateSteps();
@@ -769,7 +772,7 @@ class ChartingState extends MusicBeatState
 			PlayState.SONG = _song;
 			FlxG.sound.music.stop();
 			vocals.stop();
-			FlxG.switchState(new PlayState());
+			MusicBeatState.switchState(new PlayState());
 		}
 		
 		if (FlxG.keys.justPressed.ESCAPE)
@@ -778,7 +781,7 @@ class ChartingState extends MusicBeatState
 			FlxG.mouse.visible = false;
 			FlxG.sound.music.stop();
 			vocals.stop();
-			FlxG.switchState(new MainMenuState());
+			MusicBeatState.switchState(new MainMenuState());
 		}
 
 		if (FlxG.keys.justPressed.E)
@@ -926,18 +929,6 @@ class ChartingState extends MusicBeatState
 
 		updateNoteUI();
 		updateGrid();
-	}
-
-	override function beatHit() 
-	{
-		trace('beat');
-
-		super.beatHit();
-		if (!player2.animation.curAnim.name.startsWith("sing"))
-		{
-			player2.playAnim('idle');
-		}
-		player1.dance();
 	}
 
 	function recalculateSteps():Int

@@ -30,10 +30,12 @@ class OptionsMenu extends MusicBeatState
 			#end
 			new ScrollSpeedOption("Change your scroll speed (Left for -0.1, right for +0.1. If its at 1, it will be chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
+			new CameraMovementOption("If the camera should move when a note is hit")
 			// new OffsetMenu("Get a note offset based off of your inputs!"),
 		]),
 		new OptionCatagory("Appearence", [
 			new SongPositionOption("Show the songs current position (as a bar)"),
+			new TimeTypeOption("What will show up in the time bar"),
 			new DownscrollOption("Change the layout of the strumline."),
 			#if desktop
 			new RainbowFPSOption("Make the FPS Counter Rainbow (Only works with the FPS Counter toggeled on)"),
@@ -110,7 +112,7 @@ class OptionsMenu extends MusicBeatState
 		if (acceptInput)
 		{
 			if (controls.BACK && !isCat)
-				FlxG.switchState(new MainMenuState());
+				MusicBeatState.switchState(new MainMenuState());
 			else if (controls.BACK)
 			{
 				isCat = false;

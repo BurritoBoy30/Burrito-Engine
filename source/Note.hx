@@ -22,7 +22,6 @@ class Note extends FlxSprite
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
-	public var modifiedByLua:Bool = false;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
@@ -64,15 +63,9 @@ class Note extends FlxSprite
 			case 'pixel':
 				if (isSustainNote)
 				{
-					loadGraphic(Paths.image('pixelUI/' + skin + 'ENDS'));
-					width = width / 4;
-					height = height / 2;
-					loadGraphic(Paths.image('pixelUI/' + skin + 'ENDS'), true, Math.floor(width), Math.floor(height));
+					loadGraphic(Paths.image('pixelUI/' + skin + 'ENDS'), true, 7, 6);
 				} else {
-					loadGraphic(Paths.image('pixelUI/' + skin));
-					width = width / 4;
-					height = height / 5;
-					loadGraphic(Paths.image('pixelUI/' + skin), true, Math.floor(width), Math.floor(height));
+					loadGraphic(Paths.image('pixelUI/' + skin), true, 17, 17);
 				}
 				loadPixelNoteAnims();
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -83,24 +76,20 @@ class Note extends FlxSprite
 		}
 		updateHitbox();
 		
-		if(noteData > -1) {
-			if(!isSustainNote) { //Doing this 'if' check to fix the warnings on Senpai songs
-				switch (noteData)
-				{
-					case 0:
-						x += swagWidth * 0;
-						animation.play('purpleScroll');
-					case 1:
-						x += swagWidth * 1;
-						animation.play('blueScroll');
-					case 2:
-						x += swagWidth * 2;
-						animation.play('greenScroll');
-					case 3:
-						x += swagWidth * 3;
-						animation.play('redScroll');
-				}
-			}
+		switch (noteData)
+		{
+			case 0:
+				x += swagWidth * 0;
+				animation.play('purpleScroll');
+			case 1:
+				x += swagWidth * 1;
+				animation.play('blueScroll');
+			case 2:
+				x += swagWidth * 2;
+				animation.play('greenScroll');
+			case 3:
+				x += swagWidth * 3;
+				animation.play('redScroll');
 		}
 
 		// trace(prevNote);
@@ -109,6 +98,8 @@ class Note extends FlxSprite
 		{
 			noteScore * 0.2;
 			alpha = 0.6;
+			
+			if (FlxG.save.data.downscroll) flipY = true;
 
 			x += width / 2;
 
@@ -122,11 +113,6 @@ class Note extends FlxSprite
 					animation.play('greenholdend');
 				case 3:
 					animation.play('redholdend');
-			}
-			
-			if (FlxG.save.data.downscroll)
-			{
-				flipY = true;
 			}
 
 			updateHitbox();
@@ -149,7 +135,7 @@ class Note extends FlxSprite
 					case 3:
 						prevNote.animation.play('redhold');
 				}
-				prevNote.scale.y *= (Conductor.stepCrochet / 100) * 1.5 * PlayState.SONG.speed;
+				prevNote.scale.y *= (Conductor.stepCrochet / 100 * 1.5) * PlayState.SONG.speed;
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}

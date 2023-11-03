@@ -18,6 +18,8 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 	
+	public var globaloffset:Array<Float> = [0,0];
+	
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -132,11 +134,11 @@ class Character extends FlxSprite
 				tex = Paths.getSparrowAtlas('characters/DADDY_DEAREST');
 				frames = tex;
 				
-				animation.addByPrefix('idle', 'Dad idle dance', 24);
-				animation.addByPrefix('singUP', 'Dad Sing Note UP', 24);
-				animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24);
-				animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24);
-				animation.addByPrefix('singLEFT', 'Dad Sing Note LEFT', 24);
+				animation.addByPrefix('idle', 'Dad idle dance', 24, false);
+				animation.addByPrefix('singUP', 'Dad Sing Note UP', 24, false);
+				animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24, false);
+				animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24, false);
+				animation.addByPrefix('singLEFT', 'Dad Sing Note LEFT', 24, false);
 
 				addOffset('idle');
 				addOffset("singUP", -6, 50);
@@ -247,7 +249,7 @@ class Character extends FlxSprite
 				tex = Paths.getSparrowAtlas('characters/Pico_FNF_assetss');
 				frames = tex;
 				
-				animation.addByPrefix('idle', "Pico Idle Dance", 24);
+				animation.addByPrefix('idle', "Pico Idle Dance", 24, false);
 				animation.addByPrefix('singUP', 'pico Up note0', 24, false);
 				animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
 				if (isPlayer)
@@ -559,9 +561,22 @@ class Character extends FlxSprite
 			}
 		}
 	}
+	
+	var theGFs:Array<String> = ['gf', 'gf-christmas'];
 
 	override function update(elapsed:Float)
 	{
+		if (animation == null)
+		{
+			super.update(elapsed);
+			return;
+		}
+		else if (animation.curAnim == null)
+		{
+			super.update(elapsed);
+			return;
+		}
+		
 		if (!curCharacter.startsWith('bf'))
 		{
 			if (animation.curAnim.name.startsWith('sing'))
@@ -577,14 +592,15 @@ class Character extends FlxSprite
 			{
 				dance();
 				holdTimer = 0;
+				
+				PlayState.dadCamMoveX = 0;
+				PlayState.dadCamMoveY = 0;
 			}
 		}
-
-		switch (curCharacter)
-		{
-			case 'gf':
-				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-					playAnim('danceRight');
+		
+		if (theGFs.contains(curCharacter)) {
+			if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+				playAnim('danceRight');
 		}
 
 		super.update(elapsed);
@@ -601,63 +617,36 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'gf':
+				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
 						danced = !danced;
 
 						if (danced)
-							playAnim('danceRight');
+							playAnim('danceRight', true);
 						else
-							playAnim('danceLeft');
-					}
-
-				case 'gf-christmas':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-						
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-				case 'gf-car':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-				case 'gf-pixel':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
+							playAnim('danceLeft', true);
 					}
 				case 'spooky':
 					danced = !danced;
 					
 					if (danced)
-						playAnim('danceRight');
+						playAnim('danceRight', true);
 					else
-						playAnim('danceLeft');
+						playAnim('danceLeft', true);
 			
 				default:
-					playAnim('idle');
+					playAnim('idle', true);
 			}
 		}
 	}
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
+		if (animation.getByName(AnimName) == null)
+		{
+			return; //why wasn't this a thing in the first place
+		}
 		animation.play(AnimName, Force, Reversed, Frame);
 
 		var daOffset = animOffsets.get(AnimName);
@@ -668,7 +657,7 @@ class Character extends FlxSprite
 		else
 			offset.set(0, 0);
 
-		if (curCharacter == 'gf')
+		if (theGFs.contains(curCharacter))
 		{
 			if (AnimName == 'singLEFT')
 			{

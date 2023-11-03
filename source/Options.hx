@@ -250,10 +250,10 @@ class FPSCapOption extends Option
 	}
 	
 	override function right():Bool {
-		if (FlxG.save.data.fpsCap >= 290)
+		if (FlxG.save.data.fpsCap >= 120)
 		{
-			FlxG.save.data.fpsCap = 290;
-			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
+			FlxG.save.data.fpsCap = 120;
+			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(120);
 		}
 		else
 			FlxG.save.data.fpsCap = FlxG.save.data.fpsCap + 10;
@@ -262,9 +262,9 @@ class FPSCapOption extends Option
 	}
 
 	override function left():Bool {
-		if (FlxG.save.data.fpsCap > 290)
-			FlxG.save.data.fpsCap = 290;
-		else if (FlxG.save.data.fpsCap < 60)
+		if (FlxG.save.data.fpsCap > 120)
+			FlxG.save.data.fpsCap = 120;
+		else if (FlxG.save.data.fpsCap < 30)
 			FlxG.save.data.fpsCap = Application.current.window.displayMode.refreshRate;
 		else
 			FlxG.save.data.fpsCap = FlxG.save.data.fpsCap - 10;
@@ -485,4 +485,47 @@ class OffsetMenu extends Option
 		return "Time your offset";
 	}
 }
+
+class TimeTypeOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.timeShow = !FlxG.save.data.timeShow;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Time Type: " + (FlxG.save.data.timeShow ? "Time Left" : "Song Name");
+	}
+}
+
+class CameraMovementOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.camMove = !FlxG.save.data.camMove;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Camera Movement: " + (FlxG.save.data.camMove ? "On" : "Off");
+	}
+}
+
+
+
 

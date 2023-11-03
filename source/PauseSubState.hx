@@ -26,6 +26,8 @@ class PauseSubState extends MusicBeatSubstate
 	var botplayText:FlxText;
 		
 	var offsetChanged:Bool = false;
+	
+	public static var transCamera:FlxCamera;
 
 	public function new(x:Float, y:Float)
 	{
@@ -186,28 +188,26 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					close();
 				case "Restart Song":
-					FlxG.resetState();
+					FadeTransition.nextCamera = transCamera;
+					MusicBeatState.resetState();
 				case "Botplay":
 					PlayState.botplayON = !PlayState.botplayON;
 					botplayText.visible = PlayState.botplayON;
 				case "Exit to menu":
 					PlayState.botplayON = false;
+					FadeTransition.nextCamera = transCamera;
 					if (PlayState.offsetTesting)
 					{
 						PlayState.offsetTesting = false;
-						FlxG.switchState(new OptionsMenu());
+						MusicBeatState.switchState(new OptionsMenu());
+						FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					} else if (PlayState.isStoryMode) {
-						FlxG.switchState(new StoryMenuState());
+						MusicBeatState.switchState(new StoryMenuState());
+						FlxG.sound.playMusic(Paths.music('freakyMenu'));
 					} else {
-						FlxG.switchState(new FreeplayState());
+						MusicBeatState.switchState(new FreeplayState());
 					}
 			}
-		}
-
-		if (FlxG.keys.justPressed.J)
-		{
-			// for reference later!
-			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
 		}
 	}
 
